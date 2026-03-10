@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/black_bishop.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/black_king.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/black_knight.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/black_pawn.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/black_queen.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/black_rook.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/white_bishop.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/white_king.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/white_knight.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/white_pawn.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/white_queen.png</file>
+        <file>build/Desktop_Qt_6_8_1_MinGW_64_bit-Debug/debug/pieces/white_rook.png</file>
+    </qresource>
+</RCC>
