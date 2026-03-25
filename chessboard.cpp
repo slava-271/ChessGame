@@ -153,12 +153,11 @@ void ChessBoard::resizeEvent(QResizeEvent *event)
 void ChessBoard::loadPiecesImages()
 {
     QString pieceNames[] = {"king", "queen", "rook", "bishop", "knight", "pawn"};
-    QString appDir = QCoreApplication::applicationDirPath();
 
     for (const QString &color : {"white", "black"}) {
         for (const QString &name : pieceNames) {
             QString key = color + "_" + name;
-            QString path = appDir + "/pieces/" + key + ".png";
+            QString path = ":/pieces/" + key + ".png";
             m_piecesImages[key] = QPixmap(path);
         }
     }

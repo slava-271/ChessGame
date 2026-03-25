@@ -5,9 +5,13 @@
 #include <QMessageBox>
 #include <QNetworkDatagram>
 
+constexpr int TCP_PORT = 45455;
+constexpr int UDP_PORT = 45454;
+constexpr int BROADCAST_INTERVAL_MS = 2000;
+
 void MainWindow::sendBroadcastRepeat() {
     QByteArray datagram = "CHESS_INVITE";
-    udpSocket->writeDatagram(datagram, QHostAddress::Broadcast, 45454);
+    udpSocket->writeDatagram(datagram, QHostAddress::Broadcast, UDP_PORT);
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -31,10 +35,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(inviteButton, &QPushButton::clicked, this, &MainWindow::sendBroadcast);
     connect(listenButton, &QPushButton::clicked, this, &MainWindow::listenForBroadcast);
     connect(tcpServer, &QTcpServer::newConnection, this, &MainWindow::acceptConnection);
+
     broadcastTimer = new QTimer(this);
-    broadcastTimer->setInterval(2000);
+    broadcastTimer->setInterval(BROADCAST_INTERVAL_MS);
     connect(broadcastTimer, &QTimer::timeout, this, &MainWindow::sendBroadcastRepeat);
 
+    // Сразу запускаем TCP сервер
+    if (!tcpServer->listen(QHostAddress::AnyIPv4, TCP_PORT)) {
+        qDebug() << "TCP сервер не запущен:" << tcpServer->errorString();
+    }
 }
 
 MainWindow::~MainWindow() = default;
@@ -87,13 +96,9 @@ void MainWindow::sendBroadcast() {
 
         // Сформировать и отправить сообщение
         QByteArray datagram = QString("CHESS_INVITE;%1;%2").arg(name, color).toUtf8();
-        udpSocket->writeDatagram(datagram, QHostAddress::Broadcast, 45454);
+        udpSocket->writeDatagram(datagram, QHostAddress::Broadcast, UDP_PORT);
         QMessageBox::information(this, "Приглашение", "Приглашение отправлено");
 
-        if (!tcpServer->listen(QHostAddress::AnyIPv4, 45455)) {
-            QMessageBox::critical(this, "Ошибка", "Не удалось запустить TCP сервер");
-            return;
-        }
         dialog.accept();  // Закрыть диалог
     });
 
@@ -102,9 +107,8 @@ void MainWindow::sendBroadcast() {
     dialog.exec();  // Показать модальное окно
 }
 
-
 void MainWindow::listenForBroadcast() {
-    if (!udpSocket->bind(QHostAddress::AnyIPv4, 45454, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
+    if (!udpSocket->bind(QHostAddress::AnyIPv4, UDP_PORT, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
         QMessageBox::critical(this, "Ошибка", "Не удалось привязать UDP сокет");
         return;
     }
@@ -147,12 +151,11 @@ void MainWindow::processPendingDatagrams() {
     }
 }
 
-
 void MainWindow::connectToHost(QHostAddress address) {
     tcpSocket = new QTcpSocket(this);
-    tcpSocket->connectToHost(address, 45455);
+    tcpSocket->connectToHost(address, TCP_PORT);
 
-    if (!tcpSocket->waitForConnected(3000)) {
+    if (!tcpSocket->waitForConnected(900000)) {
         QMessageBox::critical(this, "Ошибка", "Не удалось подключиться по TCP");
         delete tcpSocket;
         tcpSocket = nullptr;
@@ -169,4 +172,3 @@ void MainWindow::acceptConnection() {
     QMessageBox::information(this, "Соединение", "Клиент подключился (сервер)");
     emit connectionEstablished();
 }
-
